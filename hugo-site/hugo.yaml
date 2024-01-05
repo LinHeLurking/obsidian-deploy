@@ -1,0 +1,70 @@
+baseURL: https://linhelurking.tech/
+languageCode: zh-CN
+languageName: "简体中文"
+theme: "LoveIt"
+title: 林和小站ヾ(≧▽≦*)o
+hasCJKLanguage: true
+
+author:
+  name: "林和"
+  email: "LinHe.Lurking@outlook.com"
+
+markup:
+  highlight:
+    noClasses: false
+
+menu:
+  main:
+    - identifier: coding-trick
+      name: CodingTrick  
+      url: /coding-trick/
+      weight: 100  
+    - identifier: geometry-n-graphics
+      name: Geometry/Graphics 
+      url: /geometry-n-graphics/
+      weight: 30 
+    - identifier: tech-misc
+      name: TechMisc 
+      url: /tech-misc/
+      weight: 40 
+    - identifier: essay
+      name: Essay 
+      url: /essay/
+      weight: 10 
+
+params:
+  title: 林和小站ヾ(≧▽≦*)o
+  app:
+    title: 林和小站ヾ(≧▽≦*)o
+  header:
+    title: 
+      name: 林和小站
+  dateFormat: "2006-01-02"
+  footer:
+    hugo: false 
+    since: 2017
+  home:
+    rss: 10
+    profile:
+      enable: true
+      title: "你好，这里是林和"
+      subtitle: "很高兴认识你。这是我的个人博客站点，包含了一些技术内容、学习笔记以及生活感想。"
+      social: true 
+    posts:
+      enable: true 
+      paginate: 6
+  page:
+    hiddenFromHomePage: false
+    math:
+      enable: true 
+      # inlineLeftDelimiter: "$"
+      # inlineRightDelimiter: "$"
+      # blockLeftDelimiter: "$$"
+      # blockRightDelimiter: "$$"
+
+  search:
+    enable: false
+  social:
+    GitHub: "LinHeLurking"
+    Email: "LinHe.Lurking@outlook.com"
+
