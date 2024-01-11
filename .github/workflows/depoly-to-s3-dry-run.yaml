@@ -8,6 +8,14 @@ defaults:
 on:
   workflow_dispatch
 
+env:
+  END_POINT: '${{ secrets.S3_END_POINT }}'
+  ACCESS_KEY: '${{ secrets.S3_ACCESS_KEY }}'
+  SECRET_KEY: '${{ secrets.S3_SECRET_KEY }}'
+  BUCKET_NAME: '${{ secrets.S3_BUCKET_NAME }}'
+  VAULT: '$RUNNER_TEMP/obsidian-vault'
+  HUGO_SITE: '$GITHUB_WORKSPACE/hugo-site'
+
 permissions:
   contents: read
 
@@ -19,10 +27,10 @@ jobs:
     steps:
     - name: Verify Environments
       run: |
-        [[ -z "${{ secrets.S3_END_POINT }}" ]] && echo "Provide END_POINT" && exit 1 
-        [[ -z "${{ secrets.S3_ACCESS_KEY }}" ]] && echo "Provide ACCESS_KEY" && exit 1 
-        [[ -z "${{ secrets.S3_SECRET_KEY }}" ]] && echo "Provide SECRET_KEY" && exit 1 
-        [[ -z "${{ secrets.S3_BUCKET_NAME }}" ]] && echo "Provide BUCKET_NAME" && exit 1 
+        [[ -z "$END_POINT" ]] && echo "Provide END_POINT" && exit 1 
+        [[ -z "$ACCESS_KEY" ]] && echo "Provide ACCESS_KEY" && exit 1 
+        [[ -z "$SECRET_KEY" ]] && echo "Provide SECRET_KEY" && exit 1 
+        [[ -z "$BUCKET_NAME" ]] && echo "Provide BUCKET_NAME" && exit 1 
     - name: Checkout with submodules
       uses: actions/checkout@v4
       with:
@@ -41,9 +49,6 @@ jobs:
         hugo-version: "0.121.0"
         extended: true
     - name: Setup Hugo Site
-      env:
-        VAULT: '${{ runner.temp }}/obsidian-vault'
-        HUGO_SITE: '${{ github.workspace }}/hugo-site'
       run: |
         # Create new site but keep config.yaml
         cd $HUGO_SITE
@@ -53,11 +58,6 @@ jobs:
         chmod +x ./build.sh
         ./build.sh
     - name: Depoly to S3
-      env:
-        END_POINT: '${{ secrets.S3_END_POINT }}'
-        ACCESS_KEY: '${{ secrets.S3_ACCESS_KEY }}'
-        SECRET_KEY: '${{ secrets.S3_SECRET_KEY }}'
-        BUCKET_NAME: '${{ secrets.S3_BUCKET_NAME }}'
       run: |
         chmod +x ./sync.sh
         ./sync --dry-run
