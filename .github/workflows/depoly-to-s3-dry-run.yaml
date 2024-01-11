@@ -13,7 +13,7 @@ env:
   ACCESS_KEY: '${{ secrets.S3_ACCESS_KEY }}'
   SECRET_KEY: '${{ secrets.S3_SECRET_KEY }}'
   BUCKET_NAME: '${{ secrets.S3_BUCKET_NAME }}'
-  OBSIDIAN_GIT_URL: 'git@github.com:LinHeLurking/obsidian-git-backup.git'
+  OBSIDIAN_GIT_URL: 'LinHeLurking/obsidian-git-backup.git'
 
 permissions:
   contents: read
