@@ -56,11 +56,12 @@ jobs:
         # Create new site but keep config.yaml
         cd $GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site
         mv hugo.yaml ../ && hugo new site . --force --format yaml && mv ../hugo.yaml ./hugo.yaml
-        cd $GITHUB_WORKSPACE
         # Transpile obsidian contents
+        cd $GITHUB_WORKSPACE/obsidian-to-hugo
         chmod +x ./build.sh
         VAULT=$GITHUB_WORKSPACE/obsidian-vault/ HUGO_SITE=$GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site ./build.sh
     - name: Depoly to S3
       run: |
+        cd $GITHUB_WORKSPACE/obsidian-to-hugo
         chmod +x ./sync.sh
         ./sync --dry-run
