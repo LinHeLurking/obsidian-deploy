@@ -1,7 +1,6 @@
 venv
 env.sh
 hugo-site/archetypes
-hugo-site/assets
 hugo-site/content
 hugo-site/data
 hugo-site/i18n

@@ -1,0 +1,28 @@
+.single .single-title {
+    text-align: center !important;
+    margin: 30px !important;
+    font-size: 2.6em !important;
+    word-break: auto-phrase !important;
+}
+
+.summary .single-title {
+    margin: 20px !important;
+}
+
+.menu-item {
+    font-weight: 400 !important;
+}
+
+.single .content p {
+    line-height: 1.8 !important;
+    margin-bottom: 1em;
+}
+
+.home[data-home=posts] .summary .content {
+    color: #77777f !important;
+}
+
+.archive-item-date {
+    color: #77777f !important;
+}
+
