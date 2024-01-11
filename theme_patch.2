@@ -1,0 +1,28 @@
+diff --git a/layouts/_default/summary.html b/layouts/_default/summary.html
+index 7169220..28bce54 100644
+--- a/layouts/_default/summary.html
++++ b/layouts/_default/summary.html
+@@ -19,7 +19,10 @@
+ 
+     {{- /* Title */ -}}
+     <h1 class="single-title" itemprop="name headline">
+-        <a href="{{ .RelPermalink }}">{{ .Title | emojify }}</a>
++        {{ $_url := htmlUnescape .RelPermalink }}
++        {{- /* replace '+' in url form */ -}}
++        {{ $_url := replace .RelPermalink "+" "%2B" }}
++        <a href="{{ $_url | safeURL }}">{{ .Title | emojify }}</a>
+     </h1>
+ 
+     {{- /* Meta */ -}}
+@@ -60,7 +63,10 @@
+ 
+     {{- /* Footer */ -}}
+     <div class="post-footer">
+-        <a href="{{ .RelPermalink }}">{{ T "readMore" }}</a>
++        {{ $_url := htmlUnescape .RelPermalink }}
++        {{- /* replace '+' in url form */ -}}
++        {{ $_url := replace .RelPermalink "+" "%2B" }}
++        <a href="{{ $_url | safeURL }}"></a>{{ T "readMore" }}</a>
+         {{- with .Params.tags -}}
+             <div class="post-tags">
+                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;
