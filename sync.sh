@@ -8,4 +8,4 @@ cd $DIR_ROOT
 # activate venv if exsists and not in venv
 [[ "$VIRTUAL_ENV" == "" ]] && [[ -d "./venv" ]] && source "./venv/bin/activate"
 
-python3 "./incremental_update_remote.py"
+python3 "./incremental_update_remote.py" "$@"
