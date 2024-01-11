@@ -36,22 +36,23 @@ def f_hash(path: str):
     return hs
 
 
-def ignore_dot_file(d_root: str, name: str) -> bool:
+def ignore_dot_file(rel_d_root: str, name: str) -> bool:
     return name.startswith(".")
 
-def ignore_font_file(d_root:str, name:str) -> bool:
+
+def ignore_font_file(rel_d_root: str, name: str) -> bool:
     return name.endswith(".ttf") or name.endswith(".woff") or name.endswith(".woff2")
 
+
 def ignore_s_in_dir(s: str):
-    def wrapper(d_root: str, name: str) -> bool:
-        return d_root.endswith(s) or f"{s}{osp.sep}" in d_root
+    def wrapper(rel_d_root: str, name: str) -> bool:
+        return rel_d_root.endswith(s) or rel_d_root.endswith(f"{s}{osp.sep}")
 
     return wrapper
 
 
 ignore_git_dir = ignore_s_in_dir(".git")
 ignore_github_dir = ignore_s_in_dir(".github")
-    
 
 
 def get_local_meta(
@@ -66,8 +67,9 @@ def get_local_meta(
     res = {}
     hugo_site_public = osp.join(hugo_site_root, "public")
     for d_root, d_names, f_names in os.walk(hugo_site_public):
+        rel_d_root = osp.relpath(d_root, hugo_site_public)
         for f_name in f_names:
-            ignore = reduce(operator.or_, map(lambda op: op(d_root, f_name), f_filter))
+            ignore = reduce(operator.or_, map(lambda op: op(rel_d_root, f_name), f_filter))
             if ignore:
                 continue
             f_path = osp.join(d_root, f_name)
