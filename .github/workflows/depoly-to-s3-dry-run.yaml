@@ -53,19 +53,19 @@ jobs:
     - name: Check directory layout
       run: |
         echo "Tool directory:"
-        ls -lha $GITHUB_WORKSPACE/obsidian-to-hugo/
+        ls -lha "$GITHUB_WORKSPACE/obsidian-to-hugo/"
         echo "Obsidian vault directory:"
-        ls -lha $GITHUB_WORKSPACE/obsidian-vault/
+        ls -lha "$GITHUB_WORKSPACE/obsidian-vault/"
         if [[ ! -d "$GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site" ]]; then
-          echo "Error layout" 
+          echo "Error layout: no $GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site" 
           exit 1
         fi
         if [[ ! -f "$GITHUB_WORKSPACE/obsidian-to-hugo/sync.sh" ]]; then
-          echo "Error layout" 
+          echo "Error layout: no $GITHUB_WORKSPACE/obsidian-to-hugo/sync.sh" 
           exit 1
         fi
         if [[ ! -d "$GITHUB_WORKSPACE/obsidian-vault/.obsidian" ]]; then 
-          echo "Error layout" 
+          echo "Error layout: no $GITHUB_WORKSPACE/obsidian-vault/.obsidian" 
           exit 1
         fi
     - name: Set up Python 3.10
