@@ -25,10 +25,22 @@ jobs:
     steps:
     - name: Verify Environments
       run: |
-        [[ ! -z "$END_POINT" ]] || echo "Provide END_POINT" || exit 1 
-        [[ ! -z "$ACCESS_KEY" ]] || echo "Provide ACCESS_KEY" || exit 1 
-        [[ ! -z "$SECRET_KEY" ]] || echo "Provide SECRET_KEY" || exit 1 
-        [[ ! -z "$BUCKET_NAME" ]] || echo "Provide BUCKET_NAME" || exit 1 
+        if [[ -z "$END_POINT" ]]; then
+          echo "Provide END_POINT"
+          exit 1 
+        fi 
+        if [[ -z "$ACCESS_KEY" ]]; then
+          echo "Provide ACCESS_KEY"
+          exit 1 
+        fi 
+        if [[ -z "$SECRET_KEY" ]]; then
+          echo "Provide SECRET_KEY"
+          exit 1 
+        fi
+        if [[ -z "$BUCKET_NAME" ]]; then
+          echo "Provide BUCKET_NAME"
+          exit 1 
+        fi
     - name: Checkout with submodules
       uses: actions/checkout@v4
       with:
@@ -40,11 +52,22 @@ jobs:
         path: 'obsidian-vault'
     - name: Check directory layout
       run: |
+        echo "Tool directory:"
         ls -lha $GITHUB_WORKSPACE/obsidian-to-hugo/
+        echo "Obsidian vault directory:"
         ls -lha $GITHUB_WORKSPACE/obsidian-vault/
-        [[ ! -d "$GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site" ]] || echo "Error layout" || exit 1
-        [[ ! -f "$GITHUB_WORKSPACE/obsidian-to-hugo/sync.sh" ]] || echo "Error layout" || exit 1
-        [[ ! -d "$GITHUB_WORKSPACE/obsidian-vault/.obsidian" ]] || echo "Error layout" || exit 1
+        if [[ ! -d "$GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site" ]]; then
+          echo "Error layout" 
+          exit 1
+        fi
+        if [[ ! -f "$GITHUB_WORKSPACE/obsidian-to-hugo/sync.sh" ]]; then
+          echo "Error layout" 
+          exit 1
+        fi
+        if [[ ! -d "$GITHUB_WORKSPACE/obsidian-vault/.obsidian" ]]; then 
+          echo "Error layout" 
+          exit 1
+        fi
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
