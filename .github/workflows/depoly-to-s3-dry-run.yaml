@@ -52,6 +52,8 @@ jobs:
         path: 'obsidian-vault'
     - name: Check directory layout
       run: |
+        echo "${GITHUB_WORKSPACE}:"
+        ls -lha "$GITHUB_WORKSPACE"
         echo "Tool directory:"
         ls -lha "$GITHUB_WORKSPACE/obsidian-to-hugo/"
         echo "Obsidian vault directory:"
@@ -75,8 +77,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        cd $GITHUB_WORKSPACE/obsidian-to-hugo/
+        pushd $GITHUB_WORKSPACE/obsidian-to-hugo/
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        popd
     - name: Install Hugo
       uses: peaceiris/actions-hugo@v2
       with:
@@ -85,16 +88,19 @@ jobs:
     - name: Setup Hugo Site
       run: |
         # Create new site but keep config.yaml
-        cd $GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site
+        pushd $GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site
         mv hugo.yaml ../ && hugo new site . --force --format yaml && mv ../hugo.yaml ./hugo.yaml
+        popd
         # Transpile obsidian contents
-        cd $GITHUB_WORKSPACE/obsidian-to-hugo
+        pushd $GITHUB_WORKSPACE/obsidian-to-hugo
         chmod +x ./build.sh
         VAULT=$GITHUB_WORKSPACE/obsidian-vault/ HUGO_SITE=$GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site ./build.sh
         echo "Built public directory:"
         ls -lha $GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site/public
+        popd
     - name: Depoly to S3
       run: |
-        cd $GITHUB_WORKSPACE/obsidian-to-hugo
+        pushd $GITHUB_WORKSPACE/obsidian-to-hugo
         chmod +x ./sync.sh
         ./sync.sh --dry-run
+        popd
