@@ -50,6 +50,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         path: 'obsidian-vault'
+        repository: '$OBSIDIAN_GIT_URL'
     - name: Check directory layout
       run: |
         echo "${GITHUB_WORKSPACE}:"
