@@ -161,10 +161,11 @@ def incremental_update(
                     ContentType=content_type,
                     ContentDisposition=content_disposition,
                 )
-    print("Updating remote meta...")
-    client.put_object(
-        Bucket=BUCKET_NAME, Key=".meta.json", Body=json.dumps(local_meta).encode()
-    )
+    if not dry_run:
+        print("Updating remote meta...")
+        client.put_object(
+            Bucket=BUCKET_NAME, Key=".meta.json", Body=json.dumps(local_meta).encode()
+        )
 
 
 def main():
