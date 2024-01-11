@@ -1,0 +1,110 @@
+name: Deploy to S3
+
+# Default to bash
+defaults:
+  run:
+    shell: bash
+
+on:
+  repository_dispatch:
+    types: [deploy]
+
+  workflow_dispatch:
+
+env:
+  END_POINT: '${{ secrets.S3_END_POINT }}'
+  ACCESS_KEY: '${{ secrets.S3_ACCESS_KEY }}'
+  SECRET_KEY: '${{ secrets.S3_SECRET_KEY }}'
+  BUCKET_NAME: '${{ secrets.S3_BUCKET_NAME }}'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Verify Environments
+      run: |
+        if [[ -z "$END_POINT" ]]; then
+          echo "Provide END_POINT"
+          exit 1 
+        fi 
+        if [[ -z "$ACCESS_KEY" ]]; then
+          echo "Provide ACCESS_KEY"
+          exit 1 
+        fi 
+        if [[ -z "$SECRET_KEY" ]]; then
+          echo "Provide SECRET_KEY"
+          exit 1 
+        fi
+        if [[ -z "$BUCKET_NAME" ]]; then
+          echo "Provide BUCKET_NAME"
+          exit 1 
+        fi
+    - name: Checkout with submodules
+      uses: actions/checkout@v4
+      with:
+        submodules: "recursive"
+        path: 'obsidian-to-hugo'
+    - name: Checkout obsidian vault
+      uses: actions/checkout@v4
+      with:
+        path: 'obsidian-vault'
+        repository: LinHeLurking/obsidian-git-backup
+        ssh-key: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
+    - name: Check directory layout
+      run: |
+        echo "${GITHUB_WORKSPACE}:"
+        ls -lha "$GITHUB_WORKSPACE"
+        echo "Tool directory:"
+        ls -lha "$GITHUB_WORKSPACE/obsidian-to-hugo/"
+        echo "Obsidian vault directory:"
+        ls -lha "$GITHUB_WORKSPACE/obsidian-vault/"
+        if [[ ! -d "$GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site" ]]; then
+          echo "Error layout: no $GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site" 
+          exit 1
+        fi
+        if [[ ! -f "$GITHUB_WORKSPACE/obsidian-to-hugo/sync.sh" ]]; then
+          echo "Error layout: no $GITHUB_WORKSPACE/obsidian-to-hugo/sync.sh" 
+          exit 1
+        fi
+        if [[ ! -d "$GITHUB_WORKSPACE/obsidian-vault/.obsidian" ]]; then 
+          echo "Error layout: no $GITHUB_WORKSPACE/obsidian-vault/.obsidian" 
+          exit 1
+        fi
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pushd $GITHUB_WORKSPACE/obsidian-to-hugo/
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        popd
+    - name: Install Hugo
+      uses: peaceiris/actions-hugo@v2
+      with:
+        hugo-version: '0.121.0'
+        extended: true
+    - name: Setup Hugo Site
+      run: |
+        # Create new site but keep config.yaml
+        pushd $GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site
+        mv hugo.yaml ../ && hugo new site . --force --format yaml && mv ../hugo.yaml ./hugo.yaml
+        popd
+        # Transpile obsidian contents
+        pushd $GITHUB_WORKSPACE/obsidian-to-hugo
+        chmod +x ./build.sh
+        VAULT=$GITHUB_WORKSPACE/obsidian-vault/ HUGO_SITE=$GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site ./build.sh
+        echo "Built public directory:"
+        ls -lha $GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site/public
+        popd
+    - name: Depoly to S3
+      run: |
+        pushd $GITHUB_WORKSPACE/obsidian-to-hugo
+        chmod +x ./sync.sh
+        ./sync.sh
+        popd
