@@ -1,4 +1,4 @@
-name: Sync CDN
+name: Deploy to S3
 
 # Default to bash
 defaults:
@@ -15,7 +15,6 @@ env:
   BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
   VAULT: $RUNNER_TEMP/obsidian-vault
   HUGO_SITE: $GITHUB_WORKSPACE/hugo-site
-  HUGO_VERSION: 0.121.0
 
 permissions:
   contents: read
@@ -44,18 +43,21 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Prepare Hugo
+    - name: Install Hugo
+      uses: peaceiris/actions-hugo@v2
+      with:
+        hugo-version: "0.121.0"
+        extended: true
+    - name: Setup Hugo Site
       run: |
-        wget -O ${{ runner.temp }}/hugo.deb \
-        https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
-        && sudo dpkg -i ${{ runner.temp }}/hugo.deb 
-        sudo snap install dart-sass
-        cd $HUGO_SITE && mv hugo.yaml ../ && hugo new site . --force --format yaml && mv ../hugo.yaml ./hugo.yaml
-    - name: Build Site
-      run: |
+        # Create new site but keep config.yaml
+        cd $HUGO_SITE
+        mv hugo.yaml ../ && hugo new site . --force --format yaml && mv ../hugo.yaml ./hugo.yaml
+        cd $GITHUB_WORKSPACE
+        # Transpile obsidian contents
         chmod +x ./build.sh
         ./build.sh
-    - name: Sync CDN
+    - name: Depoly to S3
       run: |
         chmod +x ./sync.sh
         ./sync --dry-run
