@@ -5,7 +5,6 @@ hugo-site/content
 hugo-site/data
 hugo-site/i18n
 hugo-site/layouts
-hugo-site/static
 hugo-site/public
 hugo-site/resources
 hugo-site/.hugo_build.lock
