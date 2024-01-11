@@ -27,10 +27,10 @@ jobs:
     steps:
     - name: Verify Environments
       run: |
-        [[ -z "$END_POINT" ]] && echo "Provide END_POINT" && exit 1 
-        [[ -z "$ACCESS_KEY" ]] && echo "Provide ACCESS_KEY" && exit 1 
-        [[ -z "$SECRET_KEY" ]] && echo "Provide SECRET_KEY" && exit 1 
-        [[ -z "$BUCKET_NAME" ]] && echo "Provide BUCKET_NAME" && exit 1 
+        [[ ! -z "$END_POINT" ]] || echo "Provide END_POINT" && exit 1 
+        [[ ! -z "$ACCESS_KEY" ]] || echo "Provide ACCESS_KEY" && exit 1 
+        [[ ! -z "$SECRET_KEY" ]] || echo "Provide SECRET_KEY" && exit 1 
+        [[ ! -z "$BUCKET_NAME" ]] || echo "Provide BUCKET_NAME" && exit 1 
     - name: Checkout with submodules
       uses: actions/checkout@v4
       with:
