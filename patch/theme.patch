@@ -1,0 +1,73 @@
+diff --git a/layouts/_default/section.html b/layouts/_default/section.html
+index 2775891..026ae89 100644
+--- a/layouts/_default/section.html
++++ b/layouts/_default/section.html
+@@ -21,7 +21,10 @@
+                 <h3 class="group-title">{{ .Key }}</h3>
+                 {{- range .Pages -}}
+                     <article class="archive-item">
+-                        <a href="{{ .RelPermalink }}" class="archive-item-link">
++                        {{ $_url := htmlUnescape .RelPermalink }}
++                        {{- /* replace '+' in url form */ -}}
++                        {{ $_url := replace $_url "+" "%2B" }}
++                        <a href="{{ $_url }}" class="archive-item-link">
+                             {{- .Title | emojify -}}
+                         </a>
+                         <span class="archive-item-date">
+diff --git a/layouts/_default/summary.html b/layouts/_default/summary.html
+index 7169220..38ec1df 100644
+--- a/layouts/_default/summary.html
++++ b/layouts/_default/summary.html
+@@ -19,7 +19,10 @@
+ 
+     {{- /* Title */ -}}
+     <h1 class="single-title" itemprop="name headline">
+-        <a href="{{ .RelPermalink }}">{{ .Title | emojify }}</a>
++        {{ $_url := htmlUnescape .RelPermalink }}
++        {{- /* replace '+' in url form */ -}}
++        {{ $_url := replace $_url "+" "%2B" }}
++        <a href="{{ $_url | safeURL }}">{{ .Title | emojify }}</a>
+     </h1>
+ 
+     {{- /* Meta */ -}}
+@@ -60,7 +63,10 @@
+ 
+     {{- /* Footer */ -}}
+     <div class="post-footer">
+-        <a href="{{ .RelPermalink }}">{{ T "readMore" }}</a>
++        {{ $_url := htmlUnescape .RelPermalink }}
++        {{- /* replace '+' in url form */ -}}
++        {{ $_url := replace $_url "+" "%2B" }}
++        <a href="{{ $_url | safeURL }}"></a>{{ T "readMore" }}</a>
+         {{- with .Params.tags -}}
+             <div class="post-tags">
+                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;
+diff --git a/layouts/index.html b/layouts/index.html
+index 7cccb54..3da4f79 100644
+--- a/layouts/index.html
++++ b/layouts/index.html
+@@ -21,7 +21,7 @@
+         {{- /* Posts */ -}}
+         {{- if ne $posts.enable false | and .Site.RegularPages -}}
+             {{- /* Paginate */ -}}
+-            {{- $pages := where .Site.RegularPages "Type" "posts" -}}
++            {{- $pages := .Site.RegularPages -}}
+             {{- if .Site.Params.page.hiddenFromHomePage -}}
+                 {{- $pages = where $pages "Params.hiddenfromhomepage" false -}}
+             {{- else -}}
+diff --git a/layouts/taxonomy/list.html b/layouts/taxonomy/list.html
+index bd5ebb6..e8adff0 100644
+--- a/layouts/taxonomy/list.html
++++ b/layouts/taxonomy/list.html
+@@ -28,7 +28,10 @@
+                 <h3 class="group-title">{{ .Key }}</h3>
+                 {{- range .Pages -}}
+                     <article class="archive-item">
+-                        <a href="{{ .RelPermalink }}" class="archive-item-link">
++                        {{ $_url := htmlUnescape .RelPermalink }}
++                        {{- /* replace '+' in url form */ -}}
++                        {{ $_url := replace $_url "+" "%2B" }}
++                        <a href="{{ $_url }}" class="archive-item-link">
+                             {{- .Title | emojify -}}
+                         </a>
+                         <span class="archive-item-date">
