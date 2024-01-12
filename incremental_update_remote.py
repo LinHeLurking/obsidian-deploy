@@ -23,6 +23,17 @@ if not (END_POINT and ACCESS_KEY and SECRET_KEY and BUCKET_NAME):
     )
     sys.exit(0)
 
+CONTENT_TYPE = {
+    ".html": "text/html",
+    ".xml": "text/xml",
+    ".js": "application/javascript; charset=utf-8",
+    ".css": "text/css",
+    ".ico": "image/x-icon",
+    ".manifest": "application/manifest+json",
+}
+CONTENT_DISPOSITION = {
+    ".js": ""
+}
 
 def f_hash(path: str):
     hs = hashlib.sha256()
@@ -144,15 +155,11 @@ def incremental_update(
         if not dry_run:
             content_type = "application/octet-stream"
             content_disposition = "inline"
-            if obj_name.endswith(".html"):
-                content_type = "text/html"
-            if obj_name.endswith(".xml"):
-                content_type = "text/xml"
-            if obj_name.endswith(".js"):
-                content_type = "application/javascript; charset=utf-8"
-                content_disposition = ""
-            if obj_name.endswith(".css"):
-                content_type = "text/css"
+            for k in CONTENT_TYPE.keys():
+                if obj_name.endswith(k):
+                    content_type = CONTENT_TYPE[k]
+            for k in CONTENT_DISPOSITION.keys():
+                pass
             with open(local_f_path, "rb") as f:
                 client.put_object(
                     Bucket=BUCKET_NAME,
