@@ -165,6 +165,24 @@ index 7cccb54..3da4f79 100644
              {{- if .Site.Params.page.hiddenFromHomePage -}}
                  {{- $pages = where $pages "Params.hiddenfromhomepage" false -}}
              {{- else -}}
+diff --git a/layouts/partials/single/footer.html b/layouts/partials/single/footer.html
+index 1ce50db..e9d4faf 100644
+--- a/layouts/partials/single/footer.html
++++ b/layouts/partials/single/footer.html
+@@ -37,11 +37,11 @@
+                     {{- end -}}
+                 {{- end -}}
+             </div>
+-            <div class="post-info-share">
++            <!-- <div class="post-info-share">
+                 <span>
+                     {{- partial "plugin/share.html" . -}}
+                 </span>
+-            </div>
++            </div> -->
+         </div>
+     </div>
+ 
 diff --git a/layouts/taxonomy/list.html b/layouts/taxonomy/list.html
 index bd5ebb6..e8adff0 100644
 --- a/layouts/taxonomy/list.html
