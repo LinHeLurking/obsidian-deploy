@@ -61,7 +61,7 @@ def transpile(vault_path: str, hugo_root_path: str):
 
 
 if __name__ == "__main__":
-    assert len(sys.argv) >= 3, "<transpile.py> vault_path hugo_content_path"
+    assert len(sys.argv) >= 3, "<transpile.py> vault_path hugo_root_path"
     vault_path = sys.argv[1]
     hugo_root_path = sys.argv[2]
     transpile(vault_path, hugo_root_path)
