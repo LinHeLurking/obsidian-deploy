@@ -57,10 +57,6 @@ params:
     hiddenFromHomePage: false
     math:
       enable: true 
-      # inlineLeftDelimiter: "$"
-      # inlineRightDelimiter: "$"
-      # blockLeftDelimiter: "$$"
-      # blockRightDelimiter: "$$"
 
   search:
     enable: false
