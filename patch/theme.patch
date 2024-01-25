@@ -166,7 +166,7 @@ index 7cccb54..3da4f79 100644
                  {{- $pages = where $pages "Params.hiddenfromhomepage" false -}}
              {{- else -}}
 diff --git a/layouts/partials/single/footer.html b/layouts/partials/single/footer.html
-index 1ce50db..e9d4faf 100644
+index 1ce50db..849440c 100644
 --- a/layouts/partials/single/footer.html
 +++ b/layouts/partials/single/footer.html
 @@ -37,11 +37,11 @@
@@ -183,6 +183,25 @@ index 1ce50db..e9d4faf 100644
          </div>
      </div>
  
+@@ -76,10 +76,16 @@
+             {{- $nextPage = .NextInSection -}}
+         {{- end -}}
+         {{- with $prevPage -}}
+-            <a href="{{ .RelPermalink }}" class="prev" rel="prev" title="{{ .Title }}"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>{{ .Title | emojify }}</a>
++            {{ $_url := htmlUnescape .RelPermalink }}
++            {{- /* replace '+' in url form */ -}}
++            {{ $_url := replace $_url "+" "%2B" }}
++            <a href="{{ $_url }}" class="prev" rel="prev" title="{{ .Title }}"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>{{ .Title | emojify }}</a>
+         {{- end -}}
+         {{ with $nextPage }}
+-            <a href="{{ .RelPermalink }}" class="next" rel="next" title="{{ .Title }}">{{ .Title | emojify }}<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a>
++            {{ $_url := htmlUnescape .RelPermalink }}
++            {{- /* replace '+' in url form */ -}}
++            {{ $_url := replace $_url "+" "%2B" }}
++            <a href="{{ $_url }}" class="next" rel="next" title="{{ .Title }}">{{ .Title | emojify }}<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a>
+         {{- end -}}
+     </div>
+ </div>
 diff --git a/layouts/taxonomy/list.html b/layouts/taxonomy/list.html
 index bd5ebb6..e8adff0 100644
 --- a/layouts/taxonomy/list.html
