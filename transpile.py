@@ -41,6 +41,8 @@ def filter_file(file_contents: str, file_path: str) -> bool:
 
 def transpile(vault_path: str, hugo_root_path: str):
     hugo_content_path = osp.join(hugo_root_path, "content")
+    if not osp.exists(hugo_content_path):
+        os.makedirs(hugo_content_path)
     obsidian_to_hugo = ObsidianToHugo(
         obsidian_vault_dir=vault_path,
         hugo_content_dir=hugo_content_path,
