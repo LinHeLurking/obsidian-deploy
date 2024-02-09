@@ -19,9 +19,9 @@ menu:
       name: CodingTrick  
       url: /coding-trick/
       weight: 100  
-    - identifier: geometry-n-graphics
-      name: Geometry/Graphics 
-      url: /geometry-n-graphics/
+    - identifier: theory
+      name: Theory 
+      url: /theory/
       weight: 30 
     - identifier: tech-misc
       name: TechMisc 

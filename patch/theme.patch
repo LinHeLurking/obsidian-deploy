@@ -1,5 +1,16 @@
+diff --git a/layouts/_default/_markup/render-codeblock-mermaid.html b/layouts/_default/_markup/render-codeblock-mermaid.html
+new file mode 100644
+index 00000000..6aeb6f09
+--- /dev/null
++++ b/layouts/_default/_markup/render-codeblock-mermaid.html
+@@ -0,0 +1,4 @@
++<pre class="mermaid">
++    {{- .Inner | safeHTML }}
++</pre>
++{{ .Page.Store.Set "hasMermaid" true }}
+\ No newline at end of file
 diff --git a/layouts/_default/section.html b/layouts/_default/section.html
-index 2775891..026ae89 100644
+index 27758912..026ae89a 100644
 --- a/layouts/_default/section.html
 +++ b/layouts/_default/section.html
 @@ -21,7 +21,10 @@
@@ -15,10 +26,10 @@ index 2775891..026ae89 100644
                          </a>
                          <span class="archive-item-date">
 diff --git a/layouts/_default/single.html b/layouts/_default/single.html
-index f8f72d7..5f856a2 100644
+index f8f72d72..7097f75d 100644
 --- a/layouts/_default/single.html
 +++ b/layouts/_default/single.html
-@@ -2,23 +2,100 @@
+@@ -2,23 +2,107 @@
  
  {{- define "content" -}}
      {{- $params := .Scratch.Get "params" -}}
@@ -115,17 +126,24 @@ index f8f72d7..5f856a2 100644
          <div class="content" id="content">
              {{- dict "Content" .Content "Ruby" $params.ruby "Fraction" $params.fraction "Fontawesome" $params.fontawesome | partial "function/content.html" | safeHTML -}}
          </div>
- 
++        
++        {{ if .Page.Store.Get "hasMermaid" }}
++            <script type="module">
++              import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
++              mermaid.initialize({ startOnLoad: true });
++            </script>
++        {{ end }}
++
 +        {{- /* Footer */ -}}
 +        {{- partial "single/footer.html" . -}}
-+
+ 
          {{- /* Comment */ -}}
          {{- partial "comment.html" . -}}
 -    </div>
 +    </article>
  {{- end -}}
 diff --git a/layouts/_default/summary.html b/layouts/_default/summary.html
-index 7169220..b479f21 100644
+index 7169220a..b479f212 100644
 --- a/layouts/_default/summary.html
 +++ b/layouts/_default/summary.html
 @@ -19,7 +19,10 @@
@@ -153,7 +171,7 @@ index 7169220..b479f21 100644
              <div class="post-tags">
                  <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;
 diff --git a/layouts/index.html b/layouts/index.html
-index 7cccb54..3da4f79 100644
+index 7cccb547..3da4f791 100644
 --- a/layouts/index.html
 +++ b/layouts/index.html
 @@ -21,7 +21,7 @@
@@ -166,7 +184,7 @@ index 7cccb54..3da4f79 100644
                  {{- $pages = where $pages "Params.hiddenfromhomepage" false -}}
              {{- else -}}
 diff --git a/layouts/partials/single/footer.html b/layouts/partials/single/footer.html
-index 1ce50db..849440c 100644
+index 1ce50db9..849440c5 100644
 --- a/layouts/partials/single/footer.html
 +++ b/layouts/partials/single/footer.html
 @@ -37,11 +37,11 @@
@@ -203,7 +221,7 @@ index 1ce50db..849440c 100644
      </div>
  </div>
 diff --git a/layouts/taxonomy/list.html b/layouts/taxonomy/list.html
-index bd5ebb6..e8adff0 100644
+index bd5ebb6a..e8adff0a 100644
 --- a/layouts/taxonomy/list.html
 +++ b/layouts/taxonomy/list.html
 @@ -28,7 +28,10 @@
