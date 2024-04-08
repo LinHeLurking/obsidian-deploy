@@ -15,7 +15,7 @@ if [[ "$VIRTUAL_ENV" == "" ]] && [[ -d "./venv" ]]; then
 fi
 echo "Selecting $(which python)"
 
-if [[ -z "$VAULT" ]]; then 
+if [[ -z "$RAW_VAULT" ]]; then 
   echo "No vault dir! Set VAULT environment variable!"
   exit 1
 fi 
@@ -29,8 +29,8 @@ if [[ ! -d "$DIR_ROOT/tmp" ]]; then
 fi 
 rm -r "$DIR_ROOT/tmp"
 TMP_VAULT="$DIR_ROOT/tmp"
-echo "copy from $VAULT/blog/ to $TMP_VAULT/"
-cp -r "$VAULT/blog" "$TMP_VAULT/"
+echo "copy from $RAW_VAULT/blog/ to $TMP_VAULT/"
+cp -r "$RAW_VAULT/blog" "$TMP_VAULT/"
 
 # reset git submodule and apply patch 
 git submodule deinit -f .
@@ -41,6 +41,6 @@ git apply ../../../patch/theme.patch
 cd $DIR_ROOT
 echo "Removing old build"
 rm -r "$HUGO_SITE/public/"
-echo "Transpiling files from $VAULT to $HUGO_SITE/content"
-python ./transpile.py $VAULT $HUGO_SITE && \
+echo "Transpiling files from $RAW_VAULT to $HUGO_SITE/content"
+python ./transpile.py $TMP_VAULT $HUGO_SITE && \
 hugo -s $HUGO_SITE
