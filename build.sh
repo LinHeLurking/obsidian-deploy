@@ -16,7 +16,7 @@ fi
 echo "Selecting $(which python)"
 
 if [[ -z "$RAW_VAULT" ]]; then 
-  echo "No vault dir! Set VAULT environment variable!"
+  echo "No vault dir! Set RAW_VAULT environment variable!"
   exit 1
 fi 
 if [[ -z "$HUGO_SITE" ]]; then 

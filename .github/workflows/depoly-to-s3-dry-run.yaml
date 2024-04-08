@@ -95,7 +95,7 @@ jobs:
         # Transpile obsidian contents
         pushd $GITHUB_WORKSPACE/obsidian-to-hugo
         chmod +x ./build.sh
-        VAULT=$GITHUB_WORKSPACE/obsidian-vault/ HUGO_SITE=$GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site ./build.sh
+        RAW_VAULT=$GITHUB_WORKSPACE/obsidian-vault/ HUGO_SITE=$GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site ./build.sh
         echo "Built public directory:"
         ls -lha $GITHUB_WORKSPACE/obsidian-to-hugo/hugo-site/public
         popd
