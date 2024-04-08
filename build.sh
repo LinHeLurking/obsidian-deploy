@@ -8,12 +8,29 @@ if [[ -f "env.sh" ]]; then
   source "env.sh"
 fi
 
-# activate venv if exsists and not in venv
+# activate venv if exists and not in venv
 if [[ "$VIRTUAL_ENV" == "" ]] && [[ -d "./venv" ]]; then 
   echo "Activating python venv"
   source "./venv/bin/activate"
 fi
-which python
+echo "Selecting $(which python)"
+
+if [[ -z "$VAULT" ]]; then 
+  echo "No vault dir! Set VAULT environment variable!"
+  exit 1
+fi 
+if [[ -z "$HUGO_SITE" ]]; then 
+  echo "No hugo site dir! Set HUGO_SITE environment variable!"
+  exit 1
+fi 
+
+if [[ ! -d "$DIR_ROOT/tmp" ]]; then 
+  mkdir -p "$DIR_ROOT/tmp/" 
+fi 
+rm -r "$DIR_ROOT/tmp"
+TMP_VAULT="$DIR_ROOT/tmp"
+echo "copy from $VAULT/blog/ to $TMP_VAULT/"
+cp -r "$VAULT/blog" "$TMP_VAULT/"
 
 # reset git submodule and apply patch 
 git submodule deinit -f .

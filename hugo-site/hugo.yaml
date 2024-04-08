@@ -5,10 +5,6 @@ theme: "LoveIt"
 title: 林和小站ヾ(≧▽≦*)o
 hasCJKLanguage: true
 
-author:
-  name: "林和"
-  email: "LinHe.Lurking@outlook.com"
-
 markup:
   highlight:
     noClasses: false
@@ -39,6 +35,9 @@ params:
   header:
     title: 
       name: 林和小站
+  author:
+    name: "林和"
+    email: "LinHe.Lurking@outlook.com"
   dateFormat: "2006-01-02"
   footer:
     hugo: false 

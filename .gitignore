@@ -11,4 +11,5 @@ hugo-site/.hugo_build.lock
 hugo-site/static/images
 .idea
 .vscode
+tmp
 
