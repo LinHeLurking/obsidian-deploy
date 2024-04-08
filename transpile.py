@@ -4,8 +4,7 @@ import shutil
 import sys
 from dataclasses import dataclass
 from os import path as osp
-from os import walk
-from typing import Dict, Union
+from typing import Dict
 
 import yaml
 
@@ -64,12 +63,38 @@ class Transpiler:
         return res
 
     def rewrite_rule_wiki_link(self, file_content: str) -> str:
+        rewrite = []
         def repl(match_obj: re.Match):
             inline, target, display = match_obj.groups()
-            name_no_ext = target
-            if name_no_ext.endswith(".md"):
-                name_no_ext = name_no_ext[:-3]
-            return ""
+            if inline is None:
+                inline = ""
+            if display is None:
+                display = ""
+            assert target is not None
+            guess_name = target
+            if guess_name.endswith(".md"):
+                guess_name = guess_name[:-3]
+            guess_names = (f"{guess_name}.md", guess_name)
+            for name in guess_names:
+                if name in self.name2path:
+                    abs_path = self.name2path[name]
+                    if abs_path in self.files:
+                        file_info = self.files[abs_path]
+                        if "slug" in file_info.meta:
+                            rel_path = osp.relpath(abs_path, self.vault_path)
+                            if osp.sep == "\\":
+                                rel_path = rel_path.replace("\\", "/")
+                            rel_path.replace(name, file_info.meta["slug"])
+                            target = rel_path
+                        elif "url" in file_info.meta:
+                            target = file_info.meta["url"]
+                    break
+
+            # TODO: url encode for target!
+
+            link = f"{inline}[{target}]({display})"
+            print(f"Rewrite wiki link as {link}")
+            return link
 
         res = re.sub(self.WIKI_LINK_PATTERN, repl, file_content)
         return res
