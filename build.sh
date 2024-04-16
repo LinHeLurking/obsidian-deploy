@@ -42,5 +42,5 @@ cd $DIR_ROOT
 echo "Removing old build"
 rm -r "$HUGO_SITE/public/"
 echo "Transpiling files from $RAW_VAULT to $HUGO_SITE/content"
-python ./transpile.py $TMP_VAULT $HUGO_SITE && \
+python ./transpile.py $TMP_VAULT $HUGO_SITE $DRY_RUN && \
 hugo -s $HUGO_SITE
