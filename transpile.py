@@ -25,6 +25,8 @@ class Transpiler:
     DELETE_LINE_PATTERN = re.compile(r"~~[^~]+~~")
     MD_LINK_PATTERN = re.compile(r"(!)?(\[.*\])(\(.*\))")
     WIKI_LINK_PATTERN = re.compile(r"\[\[([^\[\]\|]+)(\|.+)?\]\]")
+    TRIM_LINK_PREFIX = os.getenv("TRIM_LINK_PREFIX", "blog/images/")
+    MARKDOWN_LINK_PATTERN = re.compile(r"\[([^\[\]]*)\]\((.+)\)")
     IMAGE_EXT = (
         ".jpg",
         ".jpeg",
@@ -68,8 +70,6 @@ class Transpiler:
         def repl(match_obj: re.Match):
             print(f"Rewriting wiki link: {match_obj.group(0)}")
             target, display = match_obj.groups()
-            # print(f"    target: {target}")
-            # print(f"    display: {display}")
             if display is None:
                 display = target
             elif display.startswith(""):
@@ -86,23 +86,26 @@ class Transpiler:
             if abs_path in self.files:
                 file_info = self.files[abs_path]
                 if "slug" in file_info.meta:
-                    print(f"Replace file name with slug")
+                    print("Replace file name with slug")
                     base_name = osp.basename(abs_path)
                     rel_path = osp.relpath(abs_path, self.vault_path)
-                    slug = file_info.meta["slug"]
                     if osp.sep == "\\":
                         rel_path = rel_path.replace("\\", "/")
-                    print(f"    base_name: {base_name}")
-                    print(f"    rel_path: {rel_path}")
-                    print(f"    slug: {slug}")
                     target = rel_path.replace(base_name, file_info.meta["slug"])
-                    if not target.startswith("/"):
-                        target = "/" + target
                 elif "url" in file_info.meta:
-                    print(f"Replace file name with url")
+                    print("Replace file name with url")
                     target = file_info.meta["url"]
-                    if not target.startswith("/"):
-                        target = "/" + target
+                if not target.startswith("/"):
+                    target = "/" + target
+            # Image in wiki link is in "[[xxx.png]]" format.
+            # It has no path information in it
+            ext = ""
+            idx = target.rfind(".")
+            if idx != -1:
+                ext = target[idx:]
+            if ext in self.IMAGE_EXT and "/" not in target:
+                target = "/images/" + target
+
             # url encode
             target = quote(target)
 
@@ -113,6 +116,30 @@ class Transpiler:
         res = re.sub(self.WIKI_LINK_PATTERN, repl, file_content)
         return res
 
+    def rewrite_rule_plain_md_link(self, file_content: str):
+        def repl(match_obj: re.Match):
+            old_link = match_obj.group(0)
+            display, target = match_obj.groups()
+            if target.startswith(self.TRIM_LINK_PREFIX):
+                target = target[len(self.TRIM_LINK_PREFIX) :]
+            ext = ""
+            idx = target.rfind(".")
+            ext = target[idx:]
+            if ext in self.IMAGE_EXT and "/" not in target:
+                if not target.startswith("/"):
+                    target = "/" + target
+                target = "/images" + target
+
+            # url encode
+
+            link = f"[{display}]({target})"
+            if link != old_link:
+                print(f"Rewrite markdown link as {link}")
+            return link
+
+        res = re.sub(self.MARKDOWN_LINK_PATTERN, repl, file_content)
+        return res
+
     def accept_md(self, file_info: FileInfo) -> bool:
         return True
 
@@ -121,6 +148,7 @@ class Transpiler:
             self.rewrite_rule_latex,
             self.rewrite_rule_delete_line,
             self.rewrite_rule_wiki_link,
+            self.rewrite_rule_plain_md_link,
         )
         for k, v in self.files.items():
             file_info = v
