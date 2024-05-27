@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+
+import argparse
 import hashlib
 import json
 import operator
@@ -6,18 +9,19 @@ import sys
 from functools import reduce
 from os import path as osp
 from typing import Callable, Dict, Iterable
-import argparse
+
 import boto3
 import botocore
 from botocore.config import Config
 
+print("Checking S3 secrets...")
 CHUNK_SIZE = 512
 END_POINT = os.getenv("END_POINT")
 ACCESS_KEY = os.getenv("ACCESS_KEY")
 SECRET_KEY = os.getenv("SECRET_KEY")
 BUCKET_NAME = os.getenv("BUCKET_NAME")
 
-if not (END_POINT and ACCESS_KEY and SECRET_KEY and BUCKET_NAME):
+if None in (END_POINT, ACCESS_KEY, SECRET_KEY, BUCKET_NAME):
     print(
         "Provide `END_POINT`, `ACCESS_KEY`, `SECRET_KEY` and `BUCKET_NAME` in environment variable."
     )
@@ -31,9 +35,8 @@ CONTENT_TYPE = {
     ".ico": "image/x-icon",
     ".manifest": "application/manifest+json",
 }
-CONTENT_DISPOSITION = {
-    ".js": ""
-}
+CONTENT_DISPOSITION = {".js": ""}
+
 
 def f_hash(path: str):
     hs = hashlib.sha256()
@@ -80,7 +83,9 @@ def get_local_meta(
     for d_root, d_names, f_names in os.walk(hugo_site_public):
         rel_d_root = osp.relpath(d_root, hugo_site_public)
         for f_name in f_names:
-            ignore = reduce(operator.or_, map(lambda op: op(rel_d_root, f_name), f_filter))
+            ignore = reduce(
+                operator.or_, map(lambda op: op(rel_d_root, f_name), f_filter)
+            )
             if ignore:
                 continue
             f_path = osp.join(d_root, f_name)
