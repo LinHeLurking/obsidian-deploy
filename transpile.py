@@ -76,6 +76,8 @@ class Transpiler:
                 display = display[1:]
 
             assert target is not None
+            if target.startswith("images/"):
+                target = target[7:]
             if target.endswith(".md"):
                 target = target[:-3]
             if target not in self.name2path:
@@ -191,8 +193,9 @@ class Transpiler:
         if self.dry_run:
             return
         hugo_content_path = osp.join(self.hugo_root_path, "content")
-        print(f"Removing old files in {hugo_content_path}")
-        shutil.rmtree(hugo_content_path)
+        if osp.exists(hugo_content_path):
+            print(f"Removing old files in {hugo_content_path}")
+            shutil.rmtree(hugo_content_path)
         if not osp.exists(hugo_content_path):
             os.makedirs(hugo_content_path)
         for file_info in self.files.values():
