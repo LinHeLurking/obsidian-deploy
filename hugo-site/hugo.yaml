@@ -11,18 +11,22 @@ markup:
 
 menu:
   main:
+    - identifier: misc
+      name: Misc
+      url: /misc/
+      weight: 100
     - identifier: coding-trick
       name: CodingTrick  
       url: /coding-trick/
-      weight: 100  
+      weight: 40
     - identifier: theory
-      name: Theory 
+      name: Theory
       url: /theory/
-      weight: 30 
-    - identifier: tech-misc
-      name: TechMisc 
-      url: /tech-misc/
-      weight: 40 
+      weight: 30
+    - identifier: ai
+      name: AI
+      url: /ai/
+      weight: 20
     - identifier: essay
       name: Essay 
       url: /essay/
