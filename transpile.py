@@ -110,6 +110,7 @@ class Transpiler:
                     if rel_path.endswith(".md"):
                         rel_path = rel_path[:-3]
                     target = rel_path
+                    target = target.replace(" ", "-") # hugo transform " " in file names into "-"
                 if not target.startswith("/"):
                     target = "/" + target
             # Image in wiki link is in "[[xxx.png]]" format.
