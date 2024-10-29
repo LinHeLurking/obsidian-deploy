@@ -68,28 +68,31 @@ class Transpiler:
 
     def rewrite_rule_wiki_link(self, file_content: str) -> str:
         def repl(match_obj: re.Match):
+            need_url_quote = True
             print(f"Rewriting wiki link: {match_obj.group(0)}")
             target, display = match_obj.groups()
             if display is None:
                 display = target
-            elif display.startswith(""):
+            elif display.startswith("|"):
                 display = display[1:]
 
             assert target is not None
-            if target.startswith("images/"):
-                target = target[7:]
-            if target.endswith(".md"):
-                target = target[:-3]
-            if target not in self.name2path:
-                target += ".md"
-            if target not in self.name2path:
+            file_name = target
+            if file_name.startswith("images/"):
+                file_name = target[7:]
+            if file_name.endswith(".md"):
+                file_name = target[:-3]
+            if file_name not in self.name2path:
+                # assume that it's markdown file
+                file_name += ".md"
+            if file_name not in self.name2path:
                 raise IOError(f"File {target} not found in directory")
-            abs_path = self.name2path[target]
+            abs_path = self.name2path[file_name]
+            base_name = osp.basename(abs_path)
             if abs_path in self.files:
                 file_info = self.files[abs_path]
                 if "slug" in file_info.meta:
                     print("Replace file name with slug")
-                    base_name = osp.basename(abs_path)
                     rel_path = osp.relpath(abs_path, self.vault_path)
                     if osp.sep == "\\":
                         rel_path = rel_path.replace("\\", "/")
@@ -97,6 +100,16 @@ class Transpiler:
                 elif "url" in file_info.meta:
                     print("Replace file name with url")
                     target = file_info.meta["url"]
+                elif base_name == file_name:
+                    # most wiki links contain no path prefixes (e.g. [[My Article]]). prepend them.
+                    rel_path = osp.relpath(abs_path, self.vault_path)
+                    if osp.sep == "\\":
+                        rel_path = rel_path.replace("\\", "/")
+                    if rel_path.endswith(osp.sep):
+                        rel_path = rel_path[:-len(osp.sep)]
+                    if rel_path.endswith(".md"):
+                        rel_path = rel_path[:-3]
+                    target = rel_path
                 if not target.startswith("/"):
                     target = "/" + target
             # Image in wiki link is in "[[xxx.png]]" format.
@@ -105,11 +118,18 @@ class Transpiler:
             idx = target.rfind(".")
             if idx != -1:
                 ext = target[idx:]
-            if ext in self.IMAGE_EXT and "/" not in target:
-                target = "/images/" + target
+            if ext in self.IMAGE_EXT:
+                if "/" not in file_name:
+                    # prepend image common path prefix
+                    target = "/images/" + file_name
+                if display.isdigit():
+                    # obsidian [[my_image.png|120]] set width to 120. it's not a name but a width
+                    display = target
+                    # our theme will automatically set size. so don't worry!
 
-            # url encode
-            target = quote(target)
+            if need_url_quote:
+                # url encode
+                target = quote(target)
 
             link = f"[{display}]({target})"
             print(f"Rewrite wiki link as {link}")
@@ -123,7 +143,7 @@ class Transpiler:
             old_link = match_obj.group(0)
             display, target = match_obj.groups()
             if target.startswith(self.TRIM_LINK_PREFIX):
-                target = target[len(self.TRIM_LINK_PREFIX) :]
+                target = target[len(self.TRIM_LINK_PREFIX):]
             ext = ""
             idx = target.rfind(".")
             ext = target[idx:]
