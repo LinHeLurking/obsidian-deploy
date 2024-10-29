@@ -145,7 +145,7 @@ class Transpiler:
     def accept_md(self, file_info: FileInfo) -> bool:
         return True
 
-    def rewrite_md(self) -> FileInfo:
+    def rewrite_md(self):
         rewriters = (
             self.rewrite_rule_latex,
             self.rewrite_rule_delete_line,
