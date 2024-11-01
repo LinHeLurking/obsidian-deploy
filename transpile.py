@@ -77,60 +77,63 @@ class Transpiler:
                 display = display[1:]
 
             assert target is not None
-            file_name = target
-            if file_name.startswith("images/"):
-                file_name = target[7:]
-            if file_name.endswith(".md"):
-                file_name = target[:-3]
-            if file_name not in self.name2path:
-                # assume that it's markdown file
-                file_name += ".md"
-            if file_name not in self.name2path:
-                raise IOError(f"File {target} not found in directory")
-            abs_path = self.name2path[file_name]
-            base_name = osp.basename(abs_path)
-            if abs_path in self.files:
-                file_info = self.files[abs_path]
-                if "slug" in file_info.meta:
-                    print("Replace file name with slug")
-                    rel_path = osp.relpath(abs_path, self.vault_path)
-                    if osp.sep == "\\":
-                        rel_path = rel_path.replace("\\", "/")
-                    target = rel_path.replace(base_name, file_info.meta["slug"])
-                elif "url" in file_info.meta:
-                    print("Replace file name with url")
-                    target = file_info.meta["url"]
-                elif base_name == file_name:
-                    # most wiki links contain no path prefixes (e.g. [[My Article]]). prepend them.
-                    rel_path = osp.relpath(abs_path, self.vault_path)
-                    if osp.sep == "\\":
-                        rel_path = rel_path.replace("\\", "/")
-                    if rel_path.endswith(osp.sep):
-                        rel_path = rel_path[:-len(osp.sep)]
-                    if rel_path.endswith(".md"):
-                        rel_path = rel_path[:-3]
-                    target = rel_path
-                    target = target.replace(" ", "-") # hugo transform " " in file names into "-"
-                if not target.startswith("/"):
-                    target = "/" + target
-            # Image in wiki link is in "[[xxx.png]]" format.
-            # It has no path information in it
-            ext = ""
-            idx = target.rfind(".")
-            if idx != -1:
-                ext = target[idx:]
-            if ext in self.IMAGE_EXT:
-                if "/" not in file_name:
-                    # prepend image common path prefix
-                    target = "/images/" + file_name
-                if display.isdigit():
-                    # obsidian [[my_image.png|120]] set width to 120. it's not a name but a width
-                    display = target
-                    # our theme will automatically set size. so don't worry!
-
-            if need_url_quote:
-                # url encode
-                target = quote(target)
+            if target.startswith("#"):
+                # it's an anchor
+                target = f"#{quote(target[1:])}"
+            else:
+                file_name = target
+                if file_name.startswith("images/"):
+                    file_name = target[7:]
+                if file_name.endswith(".md"):
+                    file_name = target[:-3]
+                if file_name not in self.name2path:
+                    # assume that it's markdown file
+                    file_name += ".md"
+                if file_name not in self.name2path:
+                    raise IOError(f"File {target} not found in directory")
+                abs_path = self.name2path[file_name]
+                base_name = osp.basename(abs_path)
+                if abs_path in self.files:
+                    file_info = self.files[abs_path]
+                    if "slug" in file_info.meta:
+                        print("Replace file name with slug")
+                        rel_path = osp.relpath(abs_path, self.vault_path)
+                        if osp.sep == "\\":
+                            rel_path = rel_path.replace("\\", "/")
+                        target = rel_path.replace(base_name, file_info.meta["slug"])
+                    elif "url" in file_info.meta:
+                        print("Replace file name with url")
+                        target = file_info.meta["url"]
+                    elif base_name == file_name:
+                        # most wiki links contain no path prefixes (e.g. [[My Article]]). prepend them.
+                        rel_path = osp.relpath(abs_path, self.vault_path)
+                        if osp.sep == "\\":
+                            rel_path = rel_path.replace("\\", "/")
+                        if rel_path.endswith(osp.sep):
+                            rel_path = rel_path[:-len(osp.sep)]
+                        if rel_path.endswith(".md"):
+                            rel_path = rel_path[:-3]
+                        target = rel_path
+                        target = target.replace(" ", "-") # hugo transform " " in file names into "-"
+                    if not target.startswith("/"):
+                        target = "/" + target
+                # Image in wiki link is in "[[xxx.png]]" format.
+                # It has no path information in it
+                ext = ""
+                idx = target.rfind(".")
+                if idx != -1:
+                    ext = target[idx:]
+                if ext in self.IMAGE_EXT:
+                    if "/" not in file_name:
+                        # prepend image common path prefix
+                        target = "/images/" + file_name
+                    if display.isdigit():
+                        # obsidian [[my_image.png|120]] set width to 120. it's not a name but a width
+                        display = target
+                        # our theme will automatically set size. so don't worry!
+                if need_url_quote:
+                    # url encode
+                    target = quote(target)
 
             link = f"[{display}]({target})"
             print(f"Rewrite wiki link as {link}")
