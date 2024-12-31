@@ -51,6 +51,7 @@ jobs:
         path: 'obsidian-vault'
         repository: LinHeLurking/obsidian-git-backup
         ssh-key: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
+        lfs: true
     - name: Check directory layout
       run: |
         echo "${GITHUB_WORKSPACE}:"
